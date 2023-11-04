@@ -18,7 +18,7 @@ class ApiKeyAuthMiddleware
         $apiKey = env('api_key');
         $requestKey = $request->input('token');
         if ($requestKey !== $apiKey) {
-            return abort(401); // 鉴权失败，返回 401 Unauthorized 响应
+            abort(401); // 鉴权失败，返回 401 Unauthorized 响应
         }
 
         return $next($request);
