@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TinyURL;
+use App\Http\Middleware\ApiKeyAuthMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//    return $request->user();
+//});
+
+Route::middleware(ApiKeyAuthMiddleware::class)->group(static function () {
+    Route::any('/set-url',[TinyURL::class,'setUrl']);
+    Route::any('/get-url',[TinyURL::class,'getUrl']);
 });
