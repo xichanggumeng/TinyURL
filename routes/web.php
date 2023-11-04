@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\TinyURL;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', static function () {
+    return 'Hello, world!';
 });
+
+
+Route::get('/{key}', [TinyURL::class, 'run'])
+    ->where('key', '[A-Za-z0-9]{4}');
