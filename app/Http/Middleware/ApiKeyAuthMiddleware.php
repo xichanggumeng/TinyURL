@@ -16,8 +16,7 @@ class ApiKeyAuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $apiKey = config('app.api_key'); // 从配置文件获取 API_KEY
-
-        $requestKey = $request->input('key'); // 获取请求中的 key 参数
+        $requestKey = $request->all('token'); // 获取请求中的 key 参数
 
         if ($requestKey !== $apiKey) {
             return response('Unauthorized', 401); // 鉴权失败，返回 401 Unauthorized 响应
