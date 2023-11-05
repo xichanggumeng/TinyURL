@@ -23,6 +23,7 @@ class TinyURL extends Controller
             'rowUrl' => 'required|url',
             'ageing' => 'required|integer|between:1,4320',
             'limited' => 'nullable|integer|between:0,64',
+            'key' => 'nullable|regex:/^[a-zA-Z0-9]{4}$/'
         ];
 
         $messages = [
@@ -35,6 +36,8 @@ class TinyURL extends Controller
 
             'limited.integer' => 'ageing 必须是一个整数',
             'limited.between' => 'limited 须为[0,64]',
+
+            'key.regex' => 'limited 须为 [a-zA-Z0-9]{4}',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);
@@ -46,9 +49,10 @@ class TinyURL extends Controller
         }
         $params = $validator->validated();
         $params['limited'] = $params['limited'] ?? 0;
-        do {
+        $key = $params['key'] ?? '';
+        while (Cache::has("url_$key")) {
             $key = strtolower(Str::random(4));
-        } while (Cache::has("url_$key"));
+        }
 
         $urlData = [
             'key' => $key,
@@ -58,7 +62,7 @@ class TinyURL extends Controller
             'limited' => $params['limited'],
             'timestamp' => time()
         ];
-        Cache::put("url_$key", (object)$urlData,now()->addMinutes($params['ageing']));
+        Cache::put("url_$key", (object)$urlData, now()->addMinutes($params['ageing']));
         return [
             'result' => $urlData
         ];
@@ -67,7 +71,7 @@ class TinyURL extends Controller
     public function getUrl(Request $request)
     {
         $rules = [
-            'key' => 'required|regex:/^[a-zA-Z0-9]{4}$/',
+            'key' => 'required|regex:/^[a-z0-9]{4}$/',
         ];
 
         $messages = [
